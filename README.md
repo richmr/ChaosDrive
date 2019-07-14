@@ -1,54 +1,32 @@
-# Loki
+# Chaos Drive
 
-RPi Zero (Raspbian) Instructions
+Chaos Drive is a POC of a USB Flash drive that can do funny things with presented storage.
+In USB Gadget parlance, the storage that is presented when a drive is plugged in is called a LUN.
 
-Working from a sudo user
+The drive has two LUNs, public and secret.  The public LUN is presented at every boot, and the secret LUN can be summoned by specific commands
 
-Set up file structure:
-- mkdir /etc/chaos
-- mkdir /etc/chaos/backing
-- mkdir /etc/chaos/config
-- mkdir /etc/chaos/logs
+## Main Chaotic functions of the drive:
 
-Make the mount points.  These need to match your config file settings
-- mkdir /mnt/chaos
-- mkdir /mnt/secret
+Because the drive is actually a fully functioning Linux device, it can interact with the LUNs in interesting ways
+### Chaotic Good:
 
-Make public and secret backing files in the backing directory
-(instructions taken from https://gist.github.com/gbaman/50b6cca61dd1c3f88f41)
-- Calculate block count required for desired backing file size: file_size_in_bytes/512
-- For example: 8 GB -> 8000000000/512 = 15625000
-- sudo dd if=/dev/zero of=/etc/chaos/backing/public.bin bs=512 count=15625000
-- sudo mkdosfs /etc/chaos/backing/public.bin
-- sudo dd if=/dev/zero of=/etc/chaos/backing/secret.bin bs=512 count=15625000
-- sudo mkdosfs /etc/chaos/backing/secret.bin
+- Reveal - Present the secret LUN in response to a specific file being written at a specific place.  I consider this Chaotic Good because it can be a good way to hide something from casual inspection
 
-Python dependencies
-- Install pip: sudo apt-get install python-pip
-- Install inotify: sudo pip install inotify
-- Install mtools: sudo apt-get install mtools
-- Install fatattr: sudo apt-get install fatattr
+### Chaotic Neutral:
 
-PocketBeagle prep
-- Get your board access to the internet: https://www.hackster.io/hologram/sharing-internet-with-the-pocketbeagle-on-osx-cd62b2
-- sudo apt-get update
-- sudo apt-get install inotify-tools
+- Squawk - Activate a serial TTY on the drive so you can log in and make changes
+- FailFail - Activate a serial TTY if the drive keeps having problems running correctly
 
-Install files:
-- Copy chaosDrive.py to /etc/chaos
-- chmod a+x /etc/chaos/chaosDrive.py 
-- Copy chaosdrive.cfg to /etc/chaos/config
-- Copy chaosdrive.sh to /etc/init.d
-- chmod a+x /etc/init.d/chaosdrive.sh
-- Copy chaosBoot.sh to /opt/scripts/boot
-- chmod a+x /opt/scripts/boot/chaosBoot.sh
+### Chaotic Evil
 
-Set up chaosDrive to start at boot (as root):
-- cd /etc/init.d
-- update-rc.d chaosdrive.sh defaults
+- Alchemy - Run a script to modify contents of a LUN before it is presented to the user
+- Dupe - Copy the contents of the public LUN to the secret LUN surreptitiously
 
-Modify the default PocketBeagle start up script:
--  Replace "am335x_evm.sh" with "chaosBoot.sh" on line 105 of /opt/scripts/boot/generic-startup.sh
+## Quick Start:
 
+The easiest way to get started is to [download](PocketBeagle/image) and flash the completed image, slap it in a PocketBeagle, boot up, and follow the instructions in [readme.txt](PocketBeagle/readme.txt)
 
+Otherwise build your own PocketBeagle image by following these [directions](PocketBeagle/buildroot)
 
+## Compatible boards
+In theory, Chaos Drive can be made to work on any OTG-capable Linux system.  But I have only worked on the PocketBeagle and the RPi Zero.  Very early on I switched over to the PocketBeagle and my most up-to-date code is all for the PocketBeagle.  The RPi Zero is best used for initial experimentation.  I do not update the RPi Zero code.   
