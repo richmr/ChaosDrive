@@ -21,6 +21,8 @@ Because the drive is actually a fully functioning Linux device, it can interact 
 
 - Alchemy - Run a script to modify contents of a LUN before it is presented to the user
 - Dupe - Copy the contents of the public LUN to the secret LUN surreptitiously
+- Fickler - Present a different LUN depending on how many times the drive has been used
+    - Intended use is to present files that get virus scanned, and then present a different set the next time the drive is used
 
 ## Quick Start:
 
@@ -29,4 +31,4 @@ The easiest way to get started is to [download](PocketBeagle/image) and flash th
 Otherwise build your own PocketBeagle image by following these [directions](PocketBeagle/buildroot)
 
 ## Compatible boards
-In theory, Chaos Drive can be made to work on any OTG-capable Linux system.  But I have only worked on the PocketBeagle and the RPi Zero.  Very early on I switched over to the PocketBeagle and my most up-to-date code is all for the PocketBeagle.  The RPi Zero is best used for initial experimentation.  I do not update the RPi Zero code.   
+In theory, Chaos Drive can be made to work on any OTG-capable Linux system.  But I have only worked on the PocketBeagle and the RPi Zero.  Very early on I switched over to the PocketBeagle and my most up-to-date code is all for the PocketBeagle.  The RPi Zero is best used for casual experimentation.  I do not update the RPi Zero code.   

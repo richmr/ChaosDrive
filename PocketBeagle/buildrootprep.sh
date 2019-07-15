@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Simply copies files from this root directory to proper place in 
-# buildroot file structure
+# buildroot file structure.  I do this before every image build
 
 # ensure the proper scripts are executable
 chmod a+x *.sh

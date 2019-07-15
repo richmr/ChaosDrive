@@ -484,6 +484,9 @@ def monitor(action):
                     if (reveal()):
                         # Once the secret LUN is presented, chaosDrive won't do anything else
                         break
+            
+            # If we get here, then something must have worked correctly, so reset the fail counter
+            reset_counter(config.get('failfail', 'failfile'))
                             
     except BaseException as badnews:
         logger.critical('monitor(): Unhandled exception received: {}'.format(badnews))
