@@ -1,11 +1,11 @@
 Welcome to Chaos Drive!
 
-If you booted this drive up for the first time and made it here, congrats!  
+If you booted this drive up for the first time and made it here, congrats!
 The following steps will get your Chaos Drive POC up and running.
 
 These steps will result in a working Chaos Drive with the default reveal and squawk functions working
 
-1: Increase the size of the partition containing this file structure to 
+1: Increase the size of the partition containing this file structure to
 something over 2 GB.  This needs to be done using another host that can read
 the sdcard.  I use gparted on Kali.  Reboot the drive when finished
 
@@ -19,16 +19,26 @@ the sdcard.  I use gparted on Kali.  Reboot the drive when finished
    Remove /etc/init.d/S50chaosdrive_initial.sh: "rm /etc/init.d/S50chaosdrive_initial.sh"
    sync to ensure file changes are set: "sync"
    This will start Chaos Drive on the next reboot
-   
-6: Power cycle the board
 
-7: You should get a 1 GB USB drive presented on the host
-   - Activate reveal by placing a file named "revelio" with the word "loki" on 
+6: Make some files to look at
+   Mount the public backing file: "/etc/chaos/bfmount.sh /etc/chaos/backing/public.bin /mnt/chaos"
+   Make a file to see: "touch /mnt/chaos/public_files"
+   Sync: "sync"
+   Un-mount the public backing file: "/etc/chaos/bfumount.sh /mnt/chaos"
+   Mount the secret backing file: "/etc/chaos/bfmount.sh /etc/chaos/backing/secret.bin /mnt/secret"
+   Make a file to see: "touch /mnt/secret/secret_files"
+   Sync: "sync"
+   Un-mount the public backing file: "/etc/chaos/bfumount.sh /mnt/secret"
+
+7: Power cycle the board
+
+8: You should get a 1 GB USB drive presented on the host with "public_files" on the root
+   - Activate reveal by placing a file named "revelio" with the word "loki" on
      the first line on the root of the USB drive
    - Activate squawk by placing a file named "swordfish" on the root of
      the USB drive
    - The default setting includes debug logging, which generates a lot of logs
-     You'll need to edit "/etc/init.d/S60chaosdrive_run.sh" and remove the 
+     You'll need to edit "/etc/init.d/S60chaosdrive_run.sh" and remove the
      "-d" after chaosDrive_pb.py on line 18.
 
 Due to the way I implemented squawk, you will have to power cycle the device if
@@ -39,4 +49,3 @@ Enjoy!
 Mike
 @miketofet
 July 2019
-  
