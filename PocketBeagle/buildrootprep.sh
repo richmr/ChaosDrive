@@ -29,6 +29,10 @@ cp -f S60chaosdrive_run.sh buildroot/pocketbeagle/overlay/etc/chaos/
 # put the readme in the root folder, since that is landing after serial tty
 cp -f readme.txt buildroot/pocketbeagle/overlay/root/
 
+# copy badlnk Alchemy script over
+mkdir -p buildroot/pocketbeagle/overlay/etc/chaos/badlnk
+cp -f badlnk/* buildroot/pocketbeagle/overlay/etc/chaos/badlnk/
+
 # make important directories
 mkdir -p buildroot/pocketbeagle/overlay/mnt/chaos
 mkdir -p buildroot/pocketbeagle/overlay/mnt/secret
