@@ -31,7 +31,7 @@ cp -f readme.txt buildroot/pocketbeagle/overlay/root/
 
 # copy badlnk Alchemy script over
 mkdir -p buildroot/pocketbeagle/overlay/etc/chaos/badlnk
-cp -f badlnk/* buildroot/pocketbeagle/overlay/etc/chaos/badlnk/
+cp -fr badlnk/* buildroot/pocketbeagle/overlay/etc/chaos/badlnk/
 
 # make important directories
 mkdir -p buildroot/pocketbeagle/overlay/mnt/chaos
