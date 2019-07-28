@@ -63,8 +63,8 @@ Start basic configuration:
 **Note:** The following is a cut and paste from Thomas Petazzoni's [walk through](https://bootlin.com/pub/conferences/2018/elc/petazzoni-e-ale-buildroot-tutorial/petazzoni-buildroot-tutorial-lab.pdf) with light editing in **bold**.  I have also removed some text for conciseness indicated with *(...)*
 
 > - In *Target options*
-    - Change *Target architecture* to *ARM (little endian)*
-    - Change *Target architecture* variant to *Cortex-A8*
+>    - Change *Target architecture* to *ARM (little endian)*
+>    - Change *Target architecture* variant to *Cortex-A8*
 >- In *Build options*, set *global patch directories* to **board/pocketbeagle/patches/**. *(...)*
 >- In *Toolchain*
     - Change *Toolchain type* to *External toolchain*. *(...)*
