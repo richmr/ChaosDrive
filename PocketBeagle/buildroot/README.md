@@ -65,11 +65,11 @@ Start basic configuration:
 > - In *Target options*
     - Change *Target architecture* to *ARM (little endian)*
     - Change *Target architecture* variant to *Cortex-A8*
-- In *Build options*, set *global patch directories* to **board/pocketbeagle/patches/**. *(...)*
-- In *Toolchain*
+>- In *Build options*, set *global patch directories* to **board/pocketbeagle/patches/**. *(...)*
+>- In *Toolchain*
     - Change *Toolchain type* to *External toolchain*. *(...)*
-- In *System configuration*, you can customize the *System host name* and *System banner* if you wish. Keep the default values for the rest.
-- In *Kernel*
+>- In *System configuration*, you can customize the *System host name* and *System banner* if you wish. Keep the default values for the rest.
+>- In *Kernel*
     - Enable the *Linux kernel*, obviously!
     - Choose *Custom version* as the *Kernel version*
     - Choose *4.14.24* as *Kernel version*
@@ -77,18 +77,18 @@ Start basic configuration:
     - Choose `omap2plus` as the *Defconfig name*
     - We’ll need the Device Tree of the PocketBeagle, so enable *Build a Device Tree Blob (DTB)*
     - And use `am335x-pocketbeagle` as the *Device Tree Source file names*
-- In *Target packages*, we’ll keep just Busybox enabled for now. In the next sections, we’ll enable more packages.
-- In *Filesystem images*, enable *ext2/3/4 root filesystem*, select the *ext4* variant. You can also disable the *tar* filesystem image, which we won’t need.
-- In *Bootloaders*, enable *U-Boot*, and in *U-Boot*:
+>- In *Target packages*, we’ll keep just Busybox enabled for now. In the next sections, we’ll enable more packages.
+>- In *Filesystem images*, enable *ext2/3/4 root filesystem*, select the *ext4* variant. You can also disable the *tar* filesystem image, which we won’t need.
+>- In *Bootloaders*, enable *U-Boot*, and in *U-Boot*:
     - Switch the *Build system* option to *Kconfig*: we are going to use a modern U-Boot, so let’s take advantage of its modern build system!
     - Use a *Custom version* of value *2018.01*. You’ll notice that the current default is already 2018.01. However, Buildroot upstream is regularly updating this to the latest U-Boot version. However, to have a reproducible setup, we really want to use a fixed version.
     - Use `am335x_pocketbeagle` as the *Board defconfig*
     - The *U-Boot binary format* should be changed from `u-boot.bin` to `u-boot.img`. *(...)*
     - Enable *Install U-Boot SPL binary image* to also install the first stage bootloader. Its name in *U-Boot SPL/TPL binary image name(s)* should be changed to `MLO` since that’s how U-Boot names it, and how the AM335x expects it to be named.
-- *(...)*
-- In *System Configuration*
+>- *(...)*
+>- In *System Configuration*
     - Set *Custom scripts to run after creating filesystem images* to **board/pocketbeagle/post-image.sh**
-- In *Host Utilities* enable `host genimage`, `host mtools` and `host dosfstools`.
+>- In *Host Utilities* enable `host genimage`, `host mtools` and `host dosfstools`.
 
 You might want to check to make sure everything compiles correctly at this point.  Exit the configuration tool and simply run `make`.  Come back in 10-15 minutes and look for `~/buildroot/output/images/sdcard.img`.  If it's there, you now have a basic working image you can try on your PocketBeagle. This isn't a completed ChaosDrive, just a working Busybox running on your board.
 
