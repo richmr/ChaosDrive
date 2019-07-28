@@ -11,26 +11,34 @@
 # file in there, and sets the system clock to match.
 
 # I use the atime, since that tends to be closer to the actual day
-# but I use the hour and minutes from ctime to apply a little randomness 
+# but I use the hour and minutes from ctime to apply a little randomness
 # to the hour that is set.  BusyBox reads FAT as atime always set to 00:00:00
 
 # You go to hack with the time you've got, not the time you want
 
-usage() 
+usage()
 {
     echo "Use to steal approximate system time for Chaos Drive"
     echo "Curently optimized for BusyBox running on PocketBeagle"
     echo "(c) 2019 Michael Rich @miketofet"
     echo
-    echo "usage $0 [directory]"
+    echo "usage $0 [-f] [directory]"
+    echo "  -f Force (don't check for existing time)"
 }
 
+###
+
+force=""
+
 ### Process opts
-while getopts "h" opt; do
+while getopts "hf" opt; do
     case ${opt} in
         h )
             usage
             exit 0
+            ;;
+        f )
+            force=1
             ;;
         \? )
             echo "Invalid Option: -$OPTARG" 1>&2
@@ -53,12 +61,16 @@ fi
 # neither of the following tests exits with anything other than 0 to prevent
 # throwing exceptions in Chaos Drive
 
-# First test, has time already been set?  
+# First test, has time already been set?
 # This rashly assumes any time after 2000 means the clock has already been set, let's return quick
-if test $(date -I | awk -F"-" '{print $1}') \> 2000
+# Will only make this check if -f has not been set
+if [ -z "$force"]
 then
-    # for test only: echo "Date is already after 2000 time probably set?"
-    exit 0
+  if test $(date -I | awk -F"-" '{print $1}') \> 2000
+  then
+      # for test only: echo "Date is already after 2000 time probably set?"
+      exit 0
+  fi
 fi
 
 # Next, check to see if there are files in the target directory
