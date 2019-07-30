@@ -31,4 +31,8 @@ The easiest way to get started is to [download](PocketBeagle/image) and flash th
 Otherwise build your own PocketBeagle image by following these [directions](PocketBeagle/buildroot)
 
 ## Compatible boards
-In theory, Chaos Drive can be made to work on any OTG-capable Linux system.  But I have only worked on the PocketBeagle and the RPi Zero.  Very early on I switched over to the PocketBeagle and my most up-to-date code is all for the PocketBeagle.  The RPi Zero is best used for casual experimentation.  I do not update the RPi Zero code.   
+In theory, Chaos Drive can be made to work on any OTG-capable Linux system.  But I have only worked on the PocketBeagle and the RPi Zero.  Very early on I switched over to the PocketBeagle and my most up-to-date code is all for the PocketBeagle.  The RPi Zero is best used for casual experimentation.  I do not update the RPi Zero code.
+
+## Presentation Slides
+
+My BSidesLV slides can be seen [here](https://docs.google.com/presentation/d/14DQWMhjUfiPpyYqgPhYSvTIRK02qSaynGmD0XMkykIQ/edit?usp=sharing) (Still under construction)   
