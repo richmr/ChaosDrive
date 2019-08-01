@@ -61,7 +61,13 @@ def cfg_section_active(section):
 def present_LUN(lun):
     # executes modprobe command to show LUN
     logger.debug("present_LUN({}) called".format(lun))
-    f = subprocess.check_call(["modprobe","g_mass_storage","file={}".format(lun),"stall=0","removable=1"])
+    # Build args list
+    args = ["modprobe","g_mass_storage","file={}".format(lun)]
+    # Add the descriptors from the config file
+    for item in config.options("usb"):
+        args.append("{}={}".format(item, config.get("usb",item)))
+        
+    f = subprocess.check_call(args)
     return
 
 def close_LUN():
@@ -583,6 +589,7 @@ if (args.debug):
 # Parse the config file
 global config
 config = ConfigParser.ConfigParser()
+config.optionxform=str
 config.read(global_cfgfile)
 
 # parse the action
