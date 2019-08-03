@@ -24,28 +24,28 @@ import subprocess
 import signal
 
 
-def configure_logging(console=False, level=logging.INFO):
+def configure_logging(console=False, level=logging.INFO
     global logger
     logger = logging.getLogger('chaosdrive')
     logger.setLevel(logging.DEBUG)
-    
+
     formatstr = '(%(asctime)s) %(levelname)s> %(message)s'
     datefmtstr = '%m/%d/%Y %H:%M:%S'
-    
+
     handler = logging.FileHandler(global_logfile)
     handler.setLevel(level)
     formatter = logging.Formatter(fmt=formatstr, datefmt=datefmtstr)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-    
+
     if (console):
         # Add a stream handler
         handler = logging.StreamHandler()
         handler.setLevel(level)
         formatter = logging.Formatter(fmt=formatstr, datefmt=datefmtstr)
         handler.setFormatter(formatter)
-        logger.addHandler(handler)    
-    
+        logger.addHandler(handler)
+
     return logger
 
 def cfg_section_active(section):
@@ -66,7 +66,7 @@ def present_LUN(lun):
     # Add the descriptors from the config file
     for item in config.options("usb"):
         args.append("{}={}".format(item, config.get("usb",item)))
-        
+
     f = subprocess.check_call(args)
     return
 
@@ -87,19 +87,19 @@ def present_secret_LUN():
     return
 
 def mount_backing_file(backingFile, write=False, mount_point=False, loop_device=0):
-    
+
     logger.debug("mount_backing_file({}, {}, {}) called".format(backingFile, write, mount_point))
     dash_o = "ro"
     if (write):
         dash_o = "rw"
-    
+
     if (not mount_point):
         # No mount point was provided, default is in the config file
         mount_point = config.get('loop','loop')
-    
+
     loop_device = str(loop_device)
     f = subprocess.check_call(["/etc/chaos/bfmount.sh","-o",dash_o,"-l",loop_device,backingFile,mount_point])
-    
+
     return
 
 def unmount(mount_point=False):
@@ -108,18 +108,18 @@ def unmount(mount_point=False):
     try:
         if (not mount_point):
             mount_point = config.get('loop','loop')
-            
+
         f = subprocess.check_call(["/etc/chaos/bfumount.sh",mount_point])
     except BaseException as badnews:
         # If umount fails, then the mount point is probably cleared already
         logger.warn("unmount() failed with {}".format(badnews))
         logger.warn("This is interpreted as the mount point already being cleared")
-        
+
     return
 
 def mount_public(write=False):
     mount_backing_file(config.get('lun','publicLUN'), write=write, mount_point=config.get('loop','loop'), loop_device=0)
-    
+
     # Now is a good time to set the system clock
     fakentp()
     return
@@ -171,8 +171,8 @@ def fakentp(target_dir=False):
     # Steals the system time from file data
     if (not target_dir):
             target_dir = config.get('loop','loop')
-    
-    # This returns quickly if time is already set        
+
+    # This returns quickly if time is already set
     f = subprocess.check_call(["/etc/chaos/fakentp.sh",target_dir])
     return
 
@@ -182,14 +182,14 @@ def newconfig():
         - Copy newconfig.cfg to a working area
         - Go through the known sections
             - Check for each section
-            - if active, check to make sure each required section is in place and 
+            - if active, check to make sure each required section is in place and
             - specified files etc exist
             - if not, record errors in an error log and post to public and remount
-    
+
     I still don't think this is a good idea.
     """
     return
-    
+
 
 def dupe():
     # Dupe function
@@ -202,14 +202,14 @@ def dupe():
     rsync_opts = config.get('dupe','rsync_options')
     rsync_cmd = "rsync {} {} {}".format(rsync_opts, src, dest)
     logger.debug("dupe(): rsync command: {}".format(rsync_cmd))
-        
-    
+
+
     try:
         if (wait):
             logger.debug("Waiting for rsync to complete before LUN presentation")
             # Then we mount the public backing file and copy first
             mount_public()
-            
+
             f = subprocess.check_call([rsync_cmd], shell=True)
             logger.info("dupe(): rsync complete")
             # When rsync returns, we unmount public and present it
@@ -221,7 +221,7 @@ def dupe():
             logger.warn("Starting copy operation after presenting public LUN, this can cause instability")
             present_public_LUN()
             mount_public()
-            
+
             f = subprocess.check_call([rsync_cmd], shell=True)
             logger.info("dupe(): rsync complete")
             # When rsync returns, we unmount public
@@ -233,7 +233,7 @@ def dupe():
         logger.error("dupe() failed with: {}".format(badnews))
         # ensure the public LUN is presented
         present_public_LUN()
-        
+
     return
 
 def alchemy():
@@ -242,7 +242,7 @@ def alchemy():
     # mount the public and secret backing files and execute the script
     mount_public(write=True)
     mount_secret(write=True)
-    
+
     cmd = '{} --publicLUN="{}" --secretLUN="{}"'.format(config.get('alchemy','script'), config.get('loop','loop'), config.get('loop','secret_loop'))
     logger.debug("alchemy(): script to call: {}".format(cmd))
     f = subprocess.check_call([cmd], shell=True)
@@ -267,7 +267,7 @@ def fickler():
     else:
         # Fickler isn't activated, should continue with chaos
         pass
-    
+
     return
 
 def activate_serial_tty():
@@ -275,10 +275,10 @@ def activate_serial_tty():
     close_LUN()
     cmd = "modprobe g_serial"
     f = subprocess.check_call([cmd], shell=True)
-    
+
     # enable the tty (and return)
-    # you've only got 1 hour (-t 3600) to get logged in
-    cmd = 'su root -c "getty -t 3600 -L 115200 ttyGS0" &'
+    # This will start an repeating "service" on g_serial
+    cmd = 'su root -c "while [ 1 ]; do getty -t 3600 -L 115200 ttyGS0; done" &'
     f = subprocess.check_call([cmd], shell=True)
     return
 
@@ -286,17 +286,17 @@ def squawk(force=False):
     # squawk function - set for PocketBeagle with busybox/buildroot
     logger.debug("squawk({}) entered".format(force))
     activate = force
-    
+
     # Pre-check to prevent any mounting
     if (force):
         activate_serial_tty()
         return True
-    
+
     mount_public()
     if (check_for_file(config.get('squawk', 'filename'), config.getboolean('squawk','auth'))):
         logger.info('Squawk control found, activating TTY')
         unmount()
-        close_LUN()       
+        close_LUN()
         activate = True
         activate_serial_tty()
         mount_public(write=True)
@@ -307,7 +307,7 @@ def squawk(force=False):
     else:
         logger.debug('Squawk control not found')
         unmount()
-    
+
     return activate
 
 def close_squawk():
@@ -321,7 +321,7 @@ def close_squawk():
 def reveal():
     # reveal function
     logger.debug("reveal() entered")
-    
+
     # check for the reveal control file
     mount_public()
     reveal_complete = False
@@ -342,7 +342,7 @@ def reveal():
     else:
         # Still need to unmount the drive
         unmount()
-        
+
     return reveal_complete
 
 def increment_persistent_count(filename):
@@ -355,7 +355,7 @@ def increment_persistent_count(filename):
         f.close()
     else:
         number = 1
-    
+
     with open(filename, "w") as counter:
         counter.write("{}\n".format(number))
     return number
@@ -364,7 +364,7 @@ def reset_counter(filename):
     logger.debug("reset_counter(filename={}) called".format(filename))
     with open(filename, "w") as counter:
         counter.write("0\n")
-    return 
+    return
 
 def failfail():
     # Escape valve.  If chaosdrive has 5 consecutive hard fails, activate squawk
@@ -378,18 +378,18 @@ def failfail():
     except BaseException as badnews:
         logger.critical('Unhandled exception in failfail: {}'.format(badnews))
         squawk(force=True)
-        
+
     return
 
 def pyinotify_wait_for_modify(filename):
     logger.debug("pyinotify_wait_for_modify(filename={}) called".format(filename))
     wm = pyinotify.WatchManager()
-    notifier = pyinotify.Notifier(wm, timeout=1000) 
+    notifier = pyinotify.Notifier(wm, timeout=1000)
     wm.add_watch(filename, pyinotify.IN_MODIFY)
-    
+
     waitingForModify = True
     firstModFound = False
-     
+
     while waitingForModify:
         if notifier.check_events(timeout=1000):
             firstModFound = True
@@ -398,7 +398,7 @@ def pyinotify_wait_for_modify(filename):
         else:
             if firstModFound:
                 waitingForModify = False
-            
+
 
     logger.debug("pyinotify_wait_for_modify(): event seen")
     return
@@ -413,7 +413,7 @@ def inotify_wait_for_modify(filename):
     i.add_watch(filename, mask=inotify.constants.IN_MODIFY)
     waitingForModify = True
     firstModFound = False
-    
+
     while waitingForModify:
         events=i.event_gen(yield_nones=False, timeout_s=1)
         events = list(events)
@@ -422,14 +422,14 @@ def inotify_wait_for_modify(filename):
         else:
             if firstModFound:
                 waitingForModify = False
-            
+
 
     logger.debug("inotify_wait_for_modify(): event seen")
     waitingForModify = True
     firstModFound = False
     return
-                            
-    
+
+
 def monitor(action):
     """
     This is the meat of the chaos drive activity
@@ -437,13 +437,13 @@ def monitor(action):
     """
     logger.debug("monitor('{}') entered".format(action))
     try:
-        
+
         if (action=="test"):
             logger.info("-------- Chaos Drive started in TEST mode ---------")
             test_clean()
         else:
             logger.info("-------- Chaos Drive started in daemon mode --------")
-            
+
         global config
         # Power up - chaosDrive assumes only power comes from the host device, so it
         # boots fresh on every insert
@@ -456,49 +456,49 @@ def monitor(action):
 #        if (check_for_file(config.get('auth','configFile'), config.get('auth','passwd'))):
 #            logger.info('new config file found')
 #        unmount()
-        
+
         # First need to see if ghost copy is enabled
         if (cfg_section_active("dupe")):
             dupe()
-                    
+
         # Then see if boggart is enabled, if so
         if (cfg_section_active("alchemy")):
             alchemy()
-            
+
         # Then check fickler
         if (cfg_section_active("fickler")):
             fickler()
-            
+
         # Present public LUN
         present_public_LUN()
         logger.info('public LUN presented from backing file: {}'.format(config.get('lun', 'publicLUN')))
-        
-        # Begin monitor mode IF monitoring functions enabled, otherwise 
+
+        # Begin monitor mode IF monitoring functions enabled, otherwise
         if (cfg_section_active("squawk") or cfg_section_active("reveal")):
             logger.info('Entering public_LUN monitoring loop')
             # inotify wait for write action on the public LUN file
-            while True: 
+            while True:
                 pyinotify_wait_for_modify(config.get('lun', 'publicLUN'))
-                
+
                 logger.debug('Write event detected on backing file')
-                
+
                 if (cfg_section_active("squawk")):
                     if (squawk()):
                         break
-                
+
                 if (cfg_section_active("reveal")):
                     if (reveal()):
                         # Once the secret LUN is presented, chaosDrive won't do anything else
                         break
-            
+
             # If we get here, then something must have worked correctly, so reset the fail counter
             reset_counter(config.get('failfail', 'failfile'))
-                            
+
     except BaseException as badnews:
         logger.critical('monitor(): Unhandled exception received: {}'.format(badnews))
-        failfail()       
+        failfail()
         os._exit(-1)
-    
+
     return
 
 def write_pid(pid):
@@ -514,7 +514,7 @@ def write_pid(pid):
         logger.critical("Unable to write pid file because: {}".format(badnews))
         logger.critical("Is the daemon already running?")
         os._exit(-1)
-    
+
     return
 
 def read_pid():
@@ -530,9 +530,9 @@ def read_pid():
         return pid
     except IOError as badnews:
         logger.critical("Unable to read pid file because: {}".format(badnews))
-        logger.critical("ChaosDrive is unable to stop itself")        
+        logger.critical("ChaosDrive is unable to stop itself")
         os._exit(-1)
-        
+
 def generate_password(pwd):
     salt = ''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(8))
     entry = crypt.crypt(pwd, '$6$'+salt+'$')
@@ -546,7 +546,7 @@ def getpwd():
         match = (key == key2)
         if (not match):
             print "Did not match!  Please try again."
-    
+
     return key
 
 def test_clean():
@@ -558,7 +558,7 @@ def test_clean():
    close_squawk()
    reset_counter(config.get('failfail', 'failfile'))
    return
-   
+
 
 
 # Set up args -----------------------------
@@ -600,7 +600,7 @@ if (args.action == 'install'):
 elif (args.action == 'test'):
     # Runs the chaosDrive in blocking mode
     configure_logging(console=True, level=log_level)
-    monitor(args.action)    
+    monitor(args.action)
 elif (args.action == 'run'):
     # Runs chaosDrive in daemon (i.e. production mode)
     configure_logging(console=False, level=log_level)
@@ -633,6 +633,6 @@ elif (args.action == 'squawk'):
     configure_logging(console=False, level=log_level)
     logger.info("Activiating squawk mode")
     squawk(force=True)
-        
-    
-logger.info('chaosDrive complete')   
+
+
+logger.info('chaosDrive complete')
