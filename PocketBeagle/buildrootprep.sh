@@ -34,6 +34,7 @@ mkdir -p buildroot/pocketbeagle/overlay/etc/chaos/badlnk
 cp -fr badlnk/* buildroot/pocketbeagle/overlay/etc/chaos/badlnk/
 
 # Copy the demo scripts over
+mkdir -p buildroot/pocketbeagle/overlay/etc/chaos/demo
 cp -fr demo/* buildroot/pocketbeagle/overlay/etc/chaos/demo
 
 # make important directories
