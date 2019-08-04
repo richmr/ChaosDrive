@@ -277,7 +277,7 @@ def activate_serial_tty():
     f = subprocess.check_call([cmd], shell=True)
 
     # enable the tty (and return)
-    # This will start an repeating "service" on g_serial
+    # This will start a repeating "service" on g_serial
     cmd = 'su root -c "while [ 1 ]; do getty -t 3600 -L 115200 ttyGS0; done" &'
     f = subprocess.check_call([cmd], shell=True)
     return

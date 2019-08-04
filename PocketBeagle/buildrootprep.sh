@@ -33,6 +33,9 @@ cp -f readme.txt buildroot/pocketbeagle/overlay/root/
 mkdir -p buildroot/pocketbeagle/overlay/etc/chaos/badlnk
 cp -fr badlnk/* buildroot/pocketbeagle/overlay/etc/chaos/badlnk/
 
+# Copy the demo scripts over
+cp -fr demo/* buildroot/pocketbeagle/overlay/etc/chaos/demo
+
 # make important directories
 mkdir -p buildroot/pocketbeagle/overlay/mnt/chaos
 mkdir -p buildroot/pocketbeagle/overlay/mnt/secret
