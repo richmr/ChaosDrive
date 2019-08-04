@@ -24,7 +24,7 @@ import subprocess
 import signal
 
 
-def configure_logging(console=False, level=logging.INFO
+def configure_logging(console=False, level=logging.INFO):
     global logger
     logger = logging.getLogger('chaosdrive')
     logger.setLevel(logging.DEBUG)
